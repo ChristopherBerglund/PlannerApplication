@@ -1,0 +1,84 @@
+﻿@model IEnumerable<PlannerApplication.Models.newactivity>
+
+
+@{
+    ViewData["Title"] = "Home Page";
+    List<string> sports = new List<string>();
+}
+
+@*////////Search//////////*@
+
+<div class="Search container ">
+    <div class="row">
+        <div class="col text-center">
+            <div class="btn-group">
+                <form>
+                    @using (Html.BeginForm("Index", "Home"))
+                    {
+                        <input class="form-control mr-sm-2 text-center" type="search" placeholder="Search..." name="searchString" aria-label="Search">
+                    }
+                </form>
+                <button type="button" class="btn btn-primary">Sortera</button>
+                <button type="button" class="btn btn-primare dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#"><strong>Senaste</strong></a>
+                    <a class="dropdown-item" href="#"><strong>Populärt</strong></a>
+                    <div class="dropdown-divider"></div>
+                    @foreach (var sport in Model)
+                    {
+                        if (!sports.Contains(sport.Activity.Name))
+                        {
+                            sports.Add(@sport.Activity.Name);
+                            <form>
+                                @using (Html.BeginForm("Index", "Home"))
+                                {
+                                    <input class="dropdown-item" type="submit" name="searchString" value="@sport.Activity.Name" @*aria-label="Search"*@>
+                                }
+                            </form>
+                        }
+                    }
+                </div>
+            </div>
+            <a type="button" class="btn btn-success" asp-area="" name="" asp-controller="Home" asp-action="GetPost">Ny Aktivitet</a>
+        </div>
+    </div>
+</div>
+
+
+@*////////Activities//////////*@
+
+<div class="card-deck m-5">
+    @foreach (var activity in Model)
+    {
+
+        <div class="col-6 mt-5">
+            <div class="card">
+                <img class="card-img-top" src="@activity.Activity.Picture" alt="Fotboll">
+                <div class="card-body">
+                    <div class="align-content-center">
+                    <img class="ml-5" src="@activity.User.Picture" style="width: 10%; height: 10%;">
+                    <h5 class="card-title"> Rubrik: @activity.Activity.Name</h5>
+                    </div>
+                    <p class="card-text">@activity.Text</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Var:</strong> @activity.Where</li>
+                    <li class="list-group-item"><strong>När:</strong> @activity.When</li>
+                    <li class="list-group-item"><strong>Ansvarig:</strong> @activity.User.firstName</li>
+                    <li class="list-group-item"><strong>Deltagare:</strong> @activity.NrOfParticipants</li>
+                </ul>
+                <div class="card-body">
+                    <button type="button" class="btn btn-success">Jag hakar!</button>
+                    <button type="button" class="btn btn-warning">Kanske...</button>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+
+
