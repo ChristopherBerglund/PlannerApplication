@@ -34,6 +34,7 @@ namespace PlannerApplication.Controllers
         [HttpPost]
         public IActionResult PostNew(string _activity, string _headline, string _where, DateTime _when, int _owner)
         {
+            //
             activity act = _context.activity.Where(x => x.Name == _activity).First();
             newactivity newAct = new newactivity()
             {
