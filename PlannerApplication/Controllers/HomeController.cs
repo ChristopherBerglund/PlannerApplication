@@ -19,7 +19,7 @@ namespace PlannerApplication.Controllers
         public IActionResult Index(string searchString)
         {
             var activities = _context.newactivity.Include("Activity").Include("User").ToList();
-            if (searchString != null)
+            if (searchString != null || searchString == "Senaste")
             {
                 activities = _context.newactivity.Where(a => a.Activity.Name == searchString).Include("Activity").Include("User").ToList();
             }
@@ -42,13 +42,33 @@ namespace PlannerApplication.Controllers
                 Text = _headline,
                 Where = _where,
                 When = _when,
-                userID = _owner
+                userID = 5 //Ej dynamisk
             };
             _context.Add(newAct);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
+        public IActionResult Join(int id)
+        {
+            var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
+            newParticipant.NrOfParticipants++;
+            _context.Update(newParticipant);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
+            _context.Remove(newParticipant);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+
         public IActionResult Privacy()
         {
             return View();

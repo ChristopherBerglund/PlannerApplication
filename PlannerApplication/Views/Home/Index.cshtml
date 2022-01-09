@@ -70,8 +70,11 @@
                     <li class="list-group-item"><strong>Deltagare:</strong> @activity.NrOfParticipants</li>
                 </ul>
                 <div class="card-body">
-                    <button type="button" class="btn btn-success">Jag hakar!</button>
+                    <a type="button" class="btn btn-success" asp-action="Join" asp-route-id="@activity.newActivityID">Jag hakar!</a>
+                    @*<button type="button" class="btn btn-success">Jag hakar!</button>*@
                     <button type="button" class="btn btn-warning">Kanske...</button>
+                     <a type="button" class="btn btn-danger" asp-action="Delete" asp-route-id="@activity.newActivityID">Radera!</a>
+                    @*<button type="button" class="btn btn-danger ">Radera</button>*@
                 </div>
             </div>
         </div>
