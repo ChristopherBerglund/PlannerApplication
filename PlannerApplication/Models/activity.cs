@@ -10,7 +10,7 @@ namespace PlannerApplication.Models
     {
         public int activityID { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Picture { get; set; } 
+        public string Picture { get; set; } = string.Empty;
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿//using System;
 //using System.Collections.Generic;
 //using System.ComponentModel.DataAnnotations;
+//using System.ComponentModel.DataAnnotations.Schema;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
@@ -11,11 +12,12 @@
 //    {
 //        [Key]
 //        public int participantID { get; set; }
-//        public int newActivityID { get; set; }
-//        public newactivity? newActivity { get; set; }
-//        public int userID { get; set; }
-//        public user? user { get; set; }
-//        //public int userID { get; set; }
-//        //public user User { get; set; }
+//        //[ForeignKey("newActivity")]
+//        //public int newActivityID { get; set; }
+//        //public newactivity newActivity { get; set; }
+
+//        [ForeignKey("User")]
+//        public string userID { get; set; }
+//        public planneruser User { get; set; }
 //    }
 //}

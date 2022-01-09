@@ -14,6 +14,6 @@ namespace PlannerApplication.Models
         public string Test { get; set; } = string.Empty;
         public DateTime Time { get; set; } = DateTime.Now;
         public int userID { get; set; }
-        public user? User { get; set; }
+        public planneruser? User { get; set; }
     }
 }

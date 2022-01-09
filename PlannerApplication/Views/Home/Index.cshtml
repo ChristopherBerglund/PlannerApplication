@@ -23,8 +23,15 @@
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#"><strong>Senaste</strong></a>
-                    <a class="dropdown-item" href="#"><strong>Populärt</strong></a>
+                                 <form>
+                                @using (Html.BeginForm("Index", "Home"))
+                                {
+                                     <input class="dropdown-item" type="submit" name="searchString" value="Senaste">
+                                     <input class="dropdown-item" type="submit" name="searchString" value="Populärt">
+                                }
+                                 </form>
+                                
+                        @*<a class="dropdown-item" href="#"><strong>Populärt</strong></a>*@
                     <div class="dropdown-divider"></div>
                     @foreach (var sport in Model)
                     {

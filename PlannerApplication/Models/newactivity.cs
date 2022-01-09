@@ -15,9 +15,10 @@ namespace PlannerApplication.Models
         public string Text { get; set; } = string.Empty;
         public DateTime When { get; set; }
         public int NrOfParticipants { get; set; }
-        //public int participantsID { get; set; }
-        //public List<participant> Participant { get; set; }
-        public int userID { get; set; }
-        public user? User { get; set; }
+
+        public string userID { get; set; } = string.Empty;
+        public planneruser? User { get; set; }
+        //public int participantID { get; set; }
+        //public participant participant { get; set; }
     }
 }
