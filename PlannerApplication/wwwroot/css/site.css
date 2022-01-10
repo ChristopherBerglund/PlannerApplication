@@ -29,16 +29,28 @@ body {
 .jumbotron h1{
     font-family: 'Century Gothic';
     color: white;
-    font-size: 30px;
-    font-weight: 500;
+    font-size: 40px;
+    font-weight: 300;
     text-align: center;
     margin-top: 50px;
 }
 .jumbotron p {
     font-family: 'Century Gothic';
     color: white;
-    font-weight: 500;
+    font-weight: 100;
     text-align: center;
 }
 
+.modal-dialog {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: auto;
+}
 
+@media(max-width: 768px) {
+    .modal-dialog {
+        min-height: calc(100vh - 20px);
+    }
+}

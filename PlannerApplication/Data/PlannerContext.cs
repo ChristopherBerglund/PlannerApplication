@@ -17,8 +17,9 @@ namespace PlannerApplication.Data
         public DbSet<activity> activity { get; set; }
         public DbSet<forum> forum { get; set; }
         public DbSet<newactivity> newactivity { get; set; }
-        //public DbSet<participant> participant { get; set; }
         public DbSet<planneruser> planneruser { get; set; }
+        public DbSet<participant> participant { get; set; }
+
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

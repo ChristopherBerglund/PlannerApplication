@@ -6,7 +6,10 @@
     List<string> sports = new List<string>();
 }
 
-@*////////Search//////////*@
+
+
+
+
 
 <div class="Search container ">
     <div class="row">
@@ -74,7 +77,12 @@
                     <li class="list-group-item"><strong>Var:</strong> @activity.Where</li>
                     <li class="list-group-item"><strong>När:</strong> @activity.When</li>
                     <li class="list-group-item"><strong>Ansvarig:</strong> @activity.User.firstName</li>
-                    <li class="list-group-item"><strong>Deltagare:</strong> @activity.NrOfParticipants</li>
+                    <li class="list-group-item">
+                        
+                          
+                    
+                      <a class="list-group-item" asp-action="Details" asp-route-id="@activity.newActivityID"><strong>Deltagare:</strong> @activity.NrOfParticipants</a>
+                        @*[ <strong>min:</strong> 4 <strong>max:</strong> 8 ]*@</li>
                 </ul>
                 <div class="card-body">
                     <a type="button" class="btn btn-success" asp-action="Join" asp-route-id="@activity.newActivityID">Jag hakar!</a>

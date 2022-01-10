@@ -26,9 +26,22 @@ namespace PlannerApplication.Controllers
             _userManager = userManager;
         }
         [HttpGet]
-        public IActionResult Index(string searchString)
+        public IActionResult Index(string searchString, string a)
         {
-            var activities = _context.newactivity.Include("Activity").Include("User").ToList();
+           
+            var activities = _context.newactivity.Include("participants").Include("Activity").Include("User").ToList();
+
+            //Radera gamla händelser
+            foreach (var activity in activities)
+            {
+                if (activity.When < DateTime.Now)
+                {
+                    _context.Remove(activity);
+                }
+            }
+            _context.SaveChanges();
+
+
             if (searchString != null && searchString != "Populärt" && searchString != "Senaste")
             {
                 activities = _context.newactivity.Where(a => a.Activity.Name == searchString).Include("Activity").Include("User").ToList();
@@ -41,7 +54,14 @@ namespace PlannerApplication.Controllers
             {
                 activities = _context.newactivity.Include("Activity").Include("User").OrderBy(x => x.When).ToList();
             }
+
+    
+
+
             return View(activities);
+
+            
+            
         }
         [HttpGet]
         public IActionResult GetPost()
@@ -51,7 +71,7 @@ namespace PlannerApplication.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> PostNew(string _activity, string _headline, string _where, DateTime _when, int _owner)
+        public async Task<IActionResult> PostNew(string _activity, string _headline, string _where, DateTime _when, int _min, int _max, int _ageLimit)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -62,32 +82,66 @@ namespace PlannerApplication.Controllers
                 Text = _headline,
                 Where = _where,
                 When = _when,
-                userID = user.Id
+                userID = user.Id,
+                NrOfParticipants = 1,
+               
             };
+
             _context.Add(newAct);
             _context.SaveChanges();
-
+            var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+            participant newPar = new participant()
+            {
+                Name = myName.firstName,
+                userID = user.Id,
+                newActivityID = newAct.newActivityID
+            };
+            _context.participant.Add(newPar);
+            _context.SaveChanges();
             return RedirectToAction("Index");
         }
         [Authorize]
-        public IActionResult Join(int id)
+        public async Task<IActionResult> Join(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
+            var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+
             var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
             newParticipant.NrOfParticipants++;
             _context.Update(newParticipant);
+
+            participant parti = new participant()
+            {
+                Name = myName.firstName,
+                userID = user.Id,
+                newActivityID = id
+            };
+            _context.Add(parti);
             _context.SaveChanges();
+
+
+
             return RedirectToAction("Index");
         }
         [Authorize]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
             var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
-            _context.Remove(newParticipant);
-            _context.SaveChanges();
+            if(newParticipant.userID == user.Id)
+            {
+                _context.Remove(newParticipant);
+                _context.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
+        public IActionResult Details(int id)
+        {
+            var part = _context.participant.Where(x => x.newActivityID == id).ToList();
 
+            return View(part);
+        }
         public IActionResult Privacy()
         {
             return View();
