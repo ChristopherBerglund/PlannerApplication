@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PlannerApplication.Models;
+using PlannerApplication.Views.Home;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace PlannerApplication.Data
         public DbSet<newactivity> newactivity { get; set; }
         public DbSet<planneruser> planneruser { get; set; }
         public DbSet<participant> participant { get; set; }
+        public DbSet<picture> picture { get; set; }
+
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

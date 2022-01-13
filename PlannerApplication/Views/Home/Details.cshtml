@@ -1,31 +1,32 @@
-﻿@model IEnumerable<PlannerApplication.Models.participant>
+﻿@*@model IEnumerable<PlannerApplication.Models.participant>
 
 <div class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Deltagare</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 @foreach (var item in Model)
                 {
-                    <li class="list-group-item">@item.Name <img class="float-end" src="/img/userIcon.png" style="width: 7%; height: 7%;" /></li>
+                    <li class="list-group-item">
+                        <a class="" asp-action="showProfile" asp-route-id="@item.User.userID">@item.User.firstName @item.User.lastName </a>
+                        @*<img class="float-end" src="@item.User.pictureID" style="width: 7%; height: 7%;" />*@
+@*                    </li>
+                    
                 }
             </div>
             <div class="modal-footer">
-                
+
                 <a type="button" class="btn btn-success" asp-area="" name="" asp-controller="Home" asp-action="Index">Tillbaka</a>
             </div>
         </div>
     </div>
 </div>
+*@
 
-
-<script type="text/javascript">
-$(document).ready(function(){
-    $('.modal').modal('show');
-});
-</script>
+@*<script type="text/javascript">
+    $(document).ready(function(){
+        $('.modal').modal('show');
+    });
+</script>*@

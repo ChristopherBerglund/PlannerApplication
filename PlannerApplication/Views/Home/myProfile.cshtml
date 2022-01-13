@@ -1,0 +1,31 @@
+﻿@*@model PlannerApplication.Models.DTO.userActivity
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card text">
+            <div class="justify-content-center align-center">
+                <img class="mx-auto d-block mt-4" src="@Model.picUrl" alt="@Model.firstName" style="width:25%; height:25%; border-radius: 50%;">
+                <h1 class="text-center mt-1">@Model.firstName @Model.lastName</h1>
+                <hr />
+                <div class="ml-3">
+                    <h5>Det här är @Model.firstName:</h5>
+                    <p>@Model.aboutMe </p>
+
+                    <h5>Favoriter:</h5>
+                    <ul>
+                        <li>@Model.interest1</li>
+                        <li>@Model.interest2</li>
+                        <li>@Model.interest3</li>
+                    </ul>
+                    <p><strong>Mail:</strong> @Model.Mail</p>
+                    <p><strong>Telefon:</strong> @Model.Phone</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+*@

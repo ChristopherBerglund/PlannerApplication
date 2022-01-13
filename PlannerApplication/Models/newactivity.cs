@@ -19,6 +19,6 @@ namespace PlannerApplication.Models
         public string userID { get; set; } = string.Empty;
         public planneruser? User { get; set; }
         //public int participantID { get; set; }
-        public ICollection<participant> participants { get; set; }
+        public IEnumerable<participant> participants { get; set; } 
     }
 }

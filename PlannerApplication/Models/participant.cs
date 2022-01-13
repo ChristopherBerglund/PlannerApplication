@@ -14,8 +14,8 @@ namespace PlannerApplication.Models
         public int participantID { get; set; }
         public string Name { get; set; }
         public int newActivityID { get; set; }
+        public newactivity newactivity { get; set; }
         public string userID { get; set; }
         public planneruser User { get; set; }
-
     }
 }

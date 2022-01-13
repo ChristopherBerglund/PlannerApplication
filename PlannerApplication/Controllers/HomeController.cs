@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlannerApplication.Data;
 using PlannerApplication.Models;
+using PlannerApplication.Models.DTO;
 using System.Diagnostics;
 
 namespace PlannerApplication.Controllers
@@ -28,9 +29,7 @@ namespace PlannerApplication.Controllers
         [HttpGet]
         public IActionResult Index(string searchString, string a)
         {
-           
-            var activities = _context.newactivity.Include("participants").Include("Activity").Include("User").ToList();
-
+            var activities = _context.newactivity.Include("Activity").Include("User").Include("participants").ToList();
             //Radera gamla händelser
             foreach (var activity in activities)
             {
@@ -40,7 +39,6 @@ namespace PlannerApplication.Controllers
                 }
             }
             _context.SaveChanges();
-
 
             if (searchString != null && searchString != "Populärt" && searchString != "Senaste")
             {
@@ -55,13 +53,15 @@ namespace PlannerApplication.Controllers
                 activities = _context.newactivity.Include("Activity").Include("User").OrderBy(x => x.When).ToList();
             }
 
-    
 
+            int sum = 0;
+            foreach (var item in activities)
+            {
+                sum++;
+            }
+            ViewBag.Sum = sum;  
 
             return View(activities);
-
-            
-            
         }
         [HttpGet]
         public IActionResult GetPost()
@@ -104,20 +104,26 @@ namespace PlannerApplication.Controllers
         public async Task<IActionResult> Join(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+            var partid = await _context.participant.Where(x => x.userID == user.Id && x.newActivityID == id).FirstOrDefaultAsync();
 
-            var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
-            newParticipant.NrOfParticipants++;
-            _context.Update(newParticipant);
-
-            participant parti = new participant()
+            if(partid is null)
             {
-                Name = myName.firstName,
-                userID = user.Id,
-                newActivityID = id
-            };
-            _context.Add(parti);
-            _context.SaveChanges();
+                var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+                var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
+                newParticipant.NrOfParticipants++;
+                _context.Update(newParticipant);
+
+                participant parti = new participant()
+                {
+                    Name = myName.firstName,
+                    userID = user.Id,
+                    newActivityID = id
+                };
+                _context.Add(parti);
+                _context.SaveChanges();
+
+            }
+
 
 
 
@@ -135,18 +141,62 @@ namespace PlannerApplication.Controllers
             }
             return RedirectToAction("Index");
         }
-
         public IActionResult Details(int id)
         {
-            var part = _context.participant.Where(x => x.newActivityID == id).ToList();
+            var part = _context.participant.Where(x => x.newActivityID == id).Include("User").ToList();
 
             return View(part);
         }
-        public IActionResult Privacy()
+        public async Task<IActionResult> myActivites(string searchString)
         {
-            return View();
-        }
+            var user = await _userManager.GetUserAsync(User);
+            var activities = _context.newactivity.Include("Activity").Include("User").Where(x => x.userID == user.Id).ToList();
 
+            //Radera gamla händelser
+            foreach (var activity in activities)
+            {
+                if (activity.When < DateTime.Now)
+                {
+                    _context.Remove(activity);
+                }
+            }
+            _context.SaveChanges();
+
+
+            if (searchString != null && searchString != "Populärt" && searchString != "Senaste")
+            {
+                activities = _context.newactivity.Where(a => a.Activity.Name == searchString).Include("Activity").Include("User").Where(x => x.userID == user.Id).ToList();
+            }
+            else if (searchString == "Populärt")
+            {
+                activities = _context.newactivity.Include("Activity").Include("User").OrderByDescending(x => x.NrOfParticipants).Where(x => x.userID == user.Id).ToList();
+            }
+            else if (searchString == "Senaste")
+            {
+                activities = _context.newactivity.Include("Activity").Include("User").OrderBy(x => x.When).Where(x => x.userID == user.Id).ToList();
+            }
+
+
+            int sum = 0;
+            foreach (var item in activities)
+            {
+                sum++;
+            }
+            ViewBag.Sum = sum;
+
+            return View(activities);
+        }
+        public async Task<IActionResult> showProfile(string? id)
+        {
+            if(id == null)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                id = user.Id;
+            }
+            
+            var pUser = _context.planneruser.Where(x => x.userID == id).FirstOrDefault();
+            return View(pUser);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -160,3 +210,50 @@ namespace PlannerApplication.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//public async Task<IActionResult> myProfile()
+//{
+//    var user = await _userManager.GetUserAsync(User);
+//    var pUser = _context.planneruser.Where(x => x.userID == user.Id).Include("picture").FirstOrDefault();
+//    var userTags = _context.activity.Where(
+//        x => x.activityID == pUser.tagOneID || 
+//        x.activityID == pUser.tagTwoID || 
+//        x.activityID == pUser.tagThreeID).Select(x => x.Name).ToList();
+
+//    var dto = new userActivity(pUser, userTags);
+//    return View(dto);
+//}
