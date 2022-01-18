@@ -9,6 +9,7 @@ using System.Diagnostics;
 
 namespace PlannerApplication.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -84,7 +85,6 @@ namespace PlannerApplication.Controllers
                 When = _when,
                 userID = user.Id,
                 NrOfParticipants = 1,
-               
             };
 
             _context.Add(newAct);
@@ -96,8 +96,8 @@ namespace PlannerApplication.Controllers
                 userID = user.Id,
                 newActivityID = newAct.newActivityID
             };
-            _context.participant.Add(newPar);
-            _context.SaveChanges();
+            await _context.participant.AddAsync(newPar);
+            await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
         [Authorize]
@@ -116,11 +116,11 @@ namespace PlannerApplication.Controllers
                 participant parti = new participant()
                 {
                     Name = myName.firstName,
-                    userID = user.Id,
+                    userID = myName.userID,
                     newActivityID = id
                 };
-                _context.Add(parti);
-                _context.SaveChanges();
+                await _context.AddAsync(parti);
+                await _context.SaveChangesAsync();
 
             }
 
@@ -137,7 +137,7 @@ namespace PlannerApplication.Controllers
             if(newParticipant.userID == user.Id)
             {
                 _context.Remove(newParticipant);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
