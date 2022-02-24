@@ -7,10 +7,13 @@
     int a = ViewBag.Sum;
     int b = 0;
     int c = Model.Count();
+    var _userID = ViewBag.user;
+    var _userAge = ViewBag.Age;
 }
 
 
 <div class="Search container ">
+    <!-- Search area -->
     <div class="row">
         <div class="col text-center">
             <div class="btn-group">
@@ -30,10 +33,10 @@
                         {
                             <input class="dropdown-item" type="submit" name="searchString" value="Senaste">
                             <input class="dropdown-item" type="submit" name="searchString" value="Populärt">
+                            <input class="dropdown-item" type="submit" name="searchString" value="Barn">
+                            <input class="dropdown-item" type="submit" name="searchString" value="Närmast mig">
                         }
                     </form>
-
-                    @*<a class="dropdown-item" href="#"><strong>Populärt</strong></a>*@
                     <div class="dropdown-divider"></div>
                     @foreach (var sport in Model)
                     {
@@ -50,72 +53,294 @@
                     }
                 </div>
             </div>
-            <a type="button" class="btn btn-success" asp-area="" name="" asp-controller="Home" asp-action="GetPost">Ny Aktivitet</a>
+            <a type="button" class="btn btn-success" asp-area="" name="" asp-controller="Home" asp-action="GetPost">Ny</a>
         </div>
     </div>
-</div>
-<div class="row justify-content-center">
-    <h5 class="col-4 mt-4 text-center" style="border-block:solid 1px blue">Antal aktiviter: @a</h5>
-</div>
-@*////////Activities//////////*@
+</div><!-- //Search area -->
 
-<div class="card-deck mt-3">
+
+
+<div class="row justify-content-center">
+    <!-- Sum of activities -->
+    <h5 class="col-4 mt-4 text-center" style="border-block:solid 1px blue">Antal aktiviter: @a</h5>
+</div><!-- //Sum of activities -->
+
+
+
+
+
+
+<div class="card-deck m-3 mt-3">
     @foreach (var activity in Model)
     {
         b = b + 1;
         <div class="col-6 " style="min-width: 450px;">
             <div class="card">
-                <img class="card-img-top" src="@activity.Activity.Picture" alt="Fotboll">
+                <a data-toggle="collapse" href="#multiCollapseExample @b" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">
+                    <img class="card-img-top" src="@activity.Activity.Picture" alt="Fotboll">
+                </a>
                 <div class="card-body">
                     <div class="align-content-center">
-                    @*    <img class="ml-5" src="@activity.User.picture.Url" style="width: 10%; height: 10%;">*@
-                        <h5 class="card-title"> Rubrik: @activity.Activity.Name</h5>
-                    </div>
-                    <p class="card-text">@activity.Text</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Var:</strong> @activity.Where</li>
-                    <li class="list-group-item"><strong>När:</strong> @activity.When</li>
-                    <li class="list-group-item"><strong>Ansvarig: <a class="" asp-action="showProfile" asp-route-id="@activity.User.userID">@activity.User.firstName</a></strong></li>
-                    <li class="list-group-item">
-                        <a class="" type="submit" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modal @b"><strong>Deltagare:</strong> @activity.NrOfParticipants</a>
-                    </li>
-                    <div class="modal fade" id="Modal @b">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title">Deltagare</h4>
-                            @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
-                          </div>
-                          <div class="modal-body">
-                                    @foreach (var item in activity.participants)
-                                    {
-                                        <li class="list-group-item">
-                                        <a class="" asp-action="showProfile" asp-route-id="@item.User.userID">@item.User.firstName @item.User.lastName </a>
-                                        <img class="float-end" src="@item.User.standardPicture" style="width: 7%; height: 7%;" />
-                                    </li> 
-                                    }
+                        <div class="collapse multi-collapse" id="multiCollapseExample @b">
+                            <div class="card card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>Distans:</strong> @activity.Distance km</li>
+                                    <li class="list-group-item"><strong>Text:</strong> @activity.Text</li>
+                                    <li class="list-group-item"><strong>Var:</strong> @activity.Where</li>
+                                    <li class="list-group-item"><strong>När:</strong> @activity.When</li>
+                                    <li class="list-group-item"><strong>Ansvarig: </strong> <a class="" type="submit" asp-action="" asp-route-id="" data-toggle="modal" data-target="#ModalProfile @b">@activity.User.firstName</a></li>
+                                    <div class="row">
+                                        <div class="col">
+                                            @if (activity.nrOfMaxParticipants != null)
+                                            {
+                                        <li class="list-group-item"><strong>Min:</strong><i> @activity.nrOfMinParticipants</i></li>
+                                            }
+                                            else
+                                            {
+                                        <li class="list-group-item"><strong>Min:</strong> <i> - </i></li>
+                                            }
+
                             </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
-                          </div>
-
+                            <div class="col">
+                                            @if (activity.nrOfMaxParticipants != null)
+                                            {
+                                    <li class="list-group-item"><strong>Max:</strong> @activity.nrOfMaxParticipants</li>
+                                            }
+                                            else
+                                            {
+                                    <li class="list-group-item"><strong>Max:</strong> <i> - </i></li>
+                                            }
+                            </div>
+                            <div class="col">
+                                            @if (activity.ageLimit != null)
+                                            {
+                                    <li class="list-group-item"><strong>År:</strong> @activity.ageLimit </li>
+                                            }
+                                            else
+                                            {
+                                    <li class="list-group-item"><strong>År:</strong> <i> - </i> </li>
+                                            }
+                            </div>
                         </div>
-                      </div>
-                    </div>
-               </ul>
-                <div class="card-body">
-                    <a type="button" class="btn btn-success" asp-action="Join" asp-route-id="@activity.newActivityID">Boka</a>
-                    @*<button type="button" class="btn btn-success">Jag hakar!</button>*@
-                    <button type="button" class="btn btn-warning">Avboka</button>
-                    @*<a type="button" class="btn btn-danger" asp-action="Delete" asp-route-id="@activity.newActivityID">Radera!</a>*@
-                    @*<button type="button" class="btn btn-danger ">Radera</button>*@
-                </div>
-                    </div>
+                                    @if (activity.nrOfMaxParticipants != null)
+                                    {
+                            <li class="list-group-item"><strong>Deltagare:</strong> <a class="" type="submit" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modal @b">@activity.NrOfParticipants / @activity.nrOfMaxParticipants</a></li>
+                                    }
+                                    else
+                                    {
+                            <li class="list-group-item"><strong>Deltagare:</strong> <a class="" type="submit" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modal @b">@activity.NrOfParticipants</a></li>
+                                    }
 
+
+
+                        <div class="modal fade" id="Modal @b">
+                            <!-- Modal for profile-->
+                        <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Deltagare</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                                    @foreach (var item in activity.participants)
+                                                    {
+                                            <ul>
+                                                <li class="list-group-item">
+                                                    <a class="" asp-area="" asp-controller="myProfile" asp-action="showProfile" asp-route-id="@item.User.userID">@item.User.firstName @item.User.lastName </a>
+                                                    <img class="float-end" src="@item.User.standardPicture" style="width: 7%; height: 7%;" />
+                                                </li>
+                                            </ul>
+                                                    }
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>              <!-- END -->
+
+
+                    <div class="modal fade" id="ModalProfile @b">
+                            <!-- Modal for profile-->
+                        <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">@activity.User.firstName</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row justify-content-center">
+                                            <div class="card text">
+                                                <div class="justify-content-center align-center">
+                                                    <img class="mx-auto d-block mt-4" src="@activity.User.standardPicture" alt="@activity.User.firstName" style="width:30%; height:25%; border-radius: 50%;">
+                                                    <h1 class="text-center">@activity.User.firstName @activity.User.lastName</h1>
+                                                    <hr />
+                                                    <div class="ml-3">
+                                                        <h5>Det här är @activity.User.firstName:</h5>
+                                                        <p>@activity.User.aboutMe </p>
+
+                                                        <h5>Favoriter:</h5>
+                                                        <ul>
+                                                            <li>@activity.User.tagOneID</li>
+                                                            <li>@activity.User.tagTwoID</li>
+                                                            <li>@activity.User.tagThreeID</li>
+                                                        </ul>
+                                                        <p><strong>Ålder:</strong> @activity.User.Age</p>
+                                                        <p><strong>Mail:</strong> @activity.User.Email</p>
+                                                        <p><strong>Telefon:</strong> @activity.User.Phone</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                        </div>
+                                    </div>
+                                </div> <!-- END -->
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                @{
+                    bool isalreadyactive = false;
                 }
+                @foreach (var item in @activity.participants)
+                {
+                    if (item.User.userID == @_userID)
+                    {
+                        isalreadyactive = true;
+                    }
+
+                }
+
+
+                <div class="card-body d-inline-flex" style="margin-top: -40px">
+                    @{
+                        if (@activity.bestBeforeDate == true)
+                        {
+                            @if (activity.isForKids == true)
+                            {
+                                <img class="float-end" src="/img/kidsZoneMod.jpg" style="width: 10%; height: 30%;" />
+                            }
+                            <p class="m-2" style="color: red">Eventet har redan inträffat.</p>
+
+                        }
+                        else if (@activity.NrOfParticipants == @activity.nrOfMaxParticipants)
+                        {
+                            if (isalreadyactive == true)
+                            {
+                                <button type="submit" class="btn btn-warning m-1" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modalss @b">Avboka</button>
+                                <div class="modal fade" id="Modalss @b">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">@activity.Activity.Name</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Är du säker på att du vill avboka din plats på detta event?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                                <a type="button" class="btn btn-warning m-1" asp-controller="Home" asp-action="UnJoin" asp-route-id="@activity.newActivityID">Avboka</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (activity.isForKids == true)
+                            {
+                                <img class="float-end" src="/img/kidsZoneMod.jpg" style="width: 10%; height: 30%;" />
+                            }
+                            <p class="m-2" style="color: red">Eventet har nått max antal deltagare.</p>
+                        }
+                        else
+                        {
+                            if (isalreadyactive == true)
+                            {
+                                <button type="submit" class="btn btn-warning m-1" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modalss @b">Avboka</button>
+                                <div class="modal fade" id="Modalss @b">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">@activity.Activity.Name</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Är du säker på att du vill avboka din plats på detta event?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                                <a type="button" class="btn btn-warning m-1" asp-controller="Home" asp-action="UnJoin" asp-route-id="@activity.newActivityID">Avboka</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success m-1" asp-action="" asp-route-id="" data-toggle="modal" data-target="#Modals @b">Boka</button>
+                                <div class="modal fade" id="Modals @b">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">@activity.Activity.Name</h4>
+                                            </div>
+                                            @if (_userAge >= activity.ageLimit)
+                                            {
+                                                @using (Html.BeginForm("Join", "Home"))
+                                                {
+                                                    <div class="modal-body">
+                                                        @if (@activity.isForKids == true)
+                                                        {
+                                                            <p>Detta event är för <strong>Barn</strong>. Vill du boka?</p>
+                                                            <p><i>Maila mig om:</i></p>
+                                                            <ul style="list-style: none;">
+                                                                <input type="hidden" value="@activity.newActivityID" name="id" />
+                                                                <li class=""><input type="checkbox" id="na" name="_canceled" value="true"><i> Eventet blir inställt.</i></li>
+                                                                <li class=""><input type="checkbox" id="na" name="_minimum" value="true"><i> Minimum deltagare nås.</i></li>
+                                                                <li class=""><input type="checkbox" id="na" name="_twohours" value="true"><i> 2 timmar innan eventet.</i></li>
+                                                            </ul>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>Detta event är för <strong>Vuxna</strong>. Vill du boka?</p>
+                                                            <p><i>Maila mig om:</i></p>
+                                                            <ul style="list-style: none;">
+                                                                <input type="hidden" value="@activity.newActivityID" name="id" />
+                                                                <li class=""><input type="checkbox" id="na" name="_canceled" value="true"><i> Eventet blir inställt.</i></li>
+                                                                <li class=""><input type="checkbox" id="na" name="_minimum" value="true"><i> Minimum deltagare nås.</i></li>
+                                                                <li class=""><input type="checkbox" id="na" name="_twohours" value="true"><i> 2 timmar innan eventet.</i></li>
+                                                            </ul>
+                                                        }
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                                        <button type="submit" class="btn btn-success m-1">Boka</button>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="modal-body">
+                                                    <p>Tyvärr! Åldersgränsen på detta event är <strong>@activity.ageLimit</strong> och du är <strong>@_userAge</strong> år. </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (activity.isForKids == true)
+                            {
+                                <img class="float-end" src="/img/kidsZoneMod.jpg" style="width: 10%; height: 30%;" />
+                            }
+                        }
+                    }
+                </div>
             </div>
+        </div>
+    }
+</div>
 
 
 
@@ -129,14 +354,3 @@
 
 
 
-
-
-
-
-
-
-@*<script type="text/javascript">
-$(document).ready(function(){
-    $('.modal').modal('show');
-});
-</script>*@

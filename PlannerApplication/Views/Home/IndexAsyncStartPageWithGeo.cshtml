@@ -1,0 +1,40 @@
+﻿<body onLoad="getLocation();"></body>
+
+@using(Html.BeginForm("Report","SomeOtherControllerName"))
+{
+   <input type="text" name="reportName" value= />
+   <input type="submit" />
+}
+
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+        var postData = { Lat: position.coords.latitude, Long: position.coords.longitude };
+    $.ajax(
+    {
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        url: "AjaxTest",
+        //dataType: "json",
+        data: JSON.stringify(postData),
+        success: function (data, status) {
+            alert("Pass" + data);
+        },
+        error: function (ex) {
+            alert("Fail" + ex);
+        }
+    });
+  //x.innerHTML = "Latitude: " + position.coords.latitude + 
+  //"<br>Longitude: " + position.coords.longitude;
+}
+</script>

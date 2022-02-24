@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlannerApplication.Data;
+using PlannerApplication.HelpClasses;
 using PlannerApplication.Models;
 using PlannerApplication.Models.DTO;
 using System.Diagnostics;
+
 
 namespace PlannerApplication.Controllers
 {
@@ -27,40 +29,46 @@ namespace PlannerApplication.Controllers
             _signInManager = SignInManager;
             _userManager = userManager;
         }
-        [HttpGet]
-        public IActionResult Index(string searchString, string a)
-        {
-            var activities = _context.newactivity.Include("Activity").Include("User").Include("participants").ToList();
-            //Radera gamla händelser
-            foreach (var activity in activities)
-            {
-                if (activity.When < DateTime.Now)
-                {
-                    _context.Remove(activity);
-                }
-            }
-            _context.SaveChanges();
+      
 
-            if (searchString != null && searchString != "Populärt" && searchString != "Senaste")
+        [HttpGet]
+        public async Task<IActionResult> IndexAsync(string searchString, string a)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.User = user.Id;
+            var me = _context.planneruser.Where(x => x.userID == user.Id).FirstOrDefault();
+            ViewBag.Age = me.Age;
+
+            var activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.When).ToList();
+           
+            //int sum = Helper.GetTheDistance(activities, me);
+
+            if (searchString != null && searchString != "Populärt" && searchString != "Senaste" && searchString != "Barn" && searchString != "Närmast mig")
             {
-                activities = _context.newactivity.Where(a => a.Activity.Name == searchString).Include("Activity").Include("User").ToList();
+                activities = _context.newactivity.Where(a => a.Activity.Name.StartsWith(searchString)).Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.When).ToList();
             }
             else if(searchString == "Populärt")
             {
-                activities = _context.newactivity.Include("Activity").Include("User").OrderByDescending(x => x.NrOfParticipants).ToList();
+                activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.NrOfParticipants).ToList();
             }
             else if (searchString == "Senaste")
             {
-                activities = _context.newactivity.Include("Activity").Include("User").OrderBy(x => x.When).ToList();
+                activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderBy(x => x.When).ToList();
             }
-
-
-            int sum = 0;
-            foreach (var item in activities)
+            else if (searchString == "Barn")
             {
-                sum++;
+                activities = _context.newactivity.Where(a => a.isForKids == true).Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.When).ToList();
             }
-            ViewBag.Sum = sum;  
+
+            else if (searchString == "Närmast mig")
+            {
+                activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderBy(x => x.Distance).ToList();
+            }
+
+            Helper.IsItAnOldEvent(activities, _context);
+            Helper.IsItLessThan2HoursToEventNotfication(activities, _context);
+            ViewBag.Sum = Helper.GetTheDistance(activities, me);
+
 
             return View(activities);
         }
@@ -72,7 +80,7 @@ namespace PlannerApplication.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> PostNew(string _activity, string _headline, string _where, DateTime _when, int _min, int _max, int _ageLimit)
+        public async Task<IActionResult> PostNew(string _activity, string _headline, DateTime _when, int _min, int _max, int _ageLimit, bool _kids, bool _Involved, bool _notification, string _lat, string _lng, string _address)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -81,54 +89,95 @@ namespace PlannerApplication.Controllers
             {
                 activityID = act.activityID,
                 Text = _headline,
-                Where = _where,
+                Where = _address,
                 When = _when,
-                userID = user.Id,
-                NrOfParticipants = 1,
-            };
+                userID = user.Id, 
+                NrOfParticipants = _Involved ? 1 : 0,
+                nrOfMaxParticipants = _max,
+                nrOfMinParticipants = _min,
+                ageLimit = _ageLimit,
+                isForKids = _kids,
+                Longitude = _lng,
+                Latitude = _lat,
 
-            _context.Add(newAct);
-            _context.SaveChanges();
-            var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
-            participant newPar = new participant()
-            {
-                Name = myName.firstName,
-                userID = user.Id,
-                newActivityID = newAct.newActivityID
             };
-            await _context.participant.AddAsync(newPar);
+            await _context.AddAsync(newAct);
             await _context.SaveChangesAsync();
+
+            if(_Involved == true)
+            {
+                var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+                participant newPar = new participant()
+                {
+                    Name = myName.firstName,
+                    userID = user.Id,
+                    newActivityID = newAct.newActivityID,
+                    NotificationMinimum = _notification
+                };
+                await _context.participant.AddAsync(newPar);
+                await _context.SaveChangesAsync();
+            }
+           
             return RedirectToAction("Index");
         }
         [Authorize]
-        public async Task<IActionResult> Join(int id)
+        [HttpPost]
+        public async Task<IActionResult> Join(int id, bool _canceled, bool _minimum, bool _twohours)
         {
             var user = await _userManager.GetUserAsync(User);
             var partid = await _context.participant.Where(x => x.userID == user.Id && x.newActivityID == id).FirstOrDefaultAsync();
+            var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
+            var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
 
-            if(partid is null)
+            if (partid is null)
             {
-                var myName = _context.planneruser.Where(x => x.userID == user.Id).First();
-                var newParticipant = _context.newactivity.Where(x => x.newActivityID == id).First();
-                newParticipant.NrOfParticipants++;
-                _context.Update(newParticipant);
-
                 participant parti = new participant()
                 {
                     Name = myName.firstName,
-                    userID = myName.userID,
-                    newActivityID = id
+                    userID = user.Id,
+                    newActivityID = id,
+                    NotificationCanceled = _canceled,
+                    NotificationMinimum = _minimum,
+                    NotificationTwoHours = _twohours
                 };
-                await _context.AddAsync(parti);
-                await _context.SaveChangesAsync();
 
+                newParticipant.NrOfParticipants++;
+                _context.newactivity.Update(newParticipant);
+                await _context.participant.AddAsync(parti);
+                await _context.SaveChangesAsync();
             }
 
-
-
+            if(newParticipant.NrOfParticipants == newParticipant.nrOfMinParticipants)
+            {
+                foreach (var User in newParticipant.participants)
+                {
+                    if (User.NotificationMinimum == true)
+                    {
+                        MailSender.MinimumMessage(User, newParticipant);
+                    }
+                }
+            }
 
             return RedirectToAction("Index");
         }
+
+        [Authorize]
+        public async Task<IActionResult> UnJoin(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var partid = await _context.participant.Where(x => x.userID == user.Id && x.newActivityID == id).FirstOrDefaultAsync();
+            
+            if (partid is not null)
+            {
+                var thisActivity = _context.newactivity.Where(x => x.newActivityID == id).FirstOrDefault();
+                thisActivity.NrOfParticipants--;
+                _context.newactivity.Update(thisActivity);
+                _context.participant.Remove(partid);
+                _context.SaveChangesAsync().Wait();
+            }
+            return RedirectToAction("Index");
+        }
+
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
@@ -141,62 +190,8 @@ namespace PlannerApplication.Controllers
             }
             return RedirectToAction("Index");
         }
-        public IActionResult Details(int id)
-        {
-            var part = _context.participant.Where(x => x.newActivityID == id).Include("User").ToList();
+       
 
-            return View(part);
-        }
-        public async Task<IActionResult> myActivites(string searchString)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var activities = _context.newactivity.Include("Activity").Include("User").Where(x => x.userID == user.Id).ToList();
-
-            //Radera gamla händelser
-            foreach (var activity in activities)
-            {
-                if (activity.When < DateTime.Now)
-                {
-                    _context.Remove(activity);
-                }
-            }
-            _context.SaveChanges();
-
-
-            if (searchString != null && searchString != "Populärt" && searchString != "Senaste")
-            {
-                activities = _context.newactivity.Where(a => a.Activity.Name == searchString).Include("Activity").Include("User").Where(x => x.userID == user.Id).ToList();
-            }
-            else if (searchString == "Populärt")
-            {
-                activities = _context.newactivity.Include("Activity").Include("User").OrderByDescending(x => x.NrOfParticipants).Where(x => x.userID == user.Id).ToList();
-            }
-            else if (searchString == "Senaste")
-            {
-                activities = _context.newactivity.Include("Activity").Include("User").OrderBy(x => x.When).Where(x => x.userID == user.Id).ToList();
-            }
-
-
-            int sum = 0;
-            foreach (var item in activities)
-            {
-                sum++;
-            }
-            ViewBag.Sum = sum;
-
-            return View(activities);
-        }
-        public async Task<IActionResult> showProfile(string? id)
-        {
-            if(id == null)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                id = user.Id;
-            }
-            
-            var pUser = _context.planneruser.Where(x => x.userID == id).FirstOrDefault();
-            return View(pUser);
-        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -241,19 +236,3 @@ namespace PlannerApplication.Controllers
 
 
 
-
-
-
-
-//public async Task<IActionResult> myProfile()
-//{
-//    var user = await _userManager.GetUserAsync(User);
-//    var pUser = _context.planneruser.Where(x => x.userID == user.Id).Include("picture").FirstOrDefault();
-//    var userTags = _context.activity.Where(
-//        x => x.activityID == pUser.tagOneID || 
-//        x.activityID == pUser.tagTwoID || 
-//        x.activityID == pUser.tagThreeID).Select(x => x.Name).ToList();
-
-//    var dto = new userActivity(pUser, userTags);
-//    return View(dto);
-//}

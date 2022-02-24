@@ -1,5 +1,4 @@
-﻿
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
@@ -21,7 +20,8 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 
 
 
@@ -29,91 +29,61 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Hem</a>
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><img class="@*card-img-top*@" style="width: 65%; height: 65%;" src="/img/Allsporter.png" alt="Alla Sporter"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
-                 @if (SignInManager.IsSignedIn(User))
-                        {
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-           
-                <ul class="navbar-nav mr-auto">
-                    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Min sida
-                        </a>
-                        
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 
-                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="myActivites">Mina Aktiviteter</a>
-                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="myActivites">Mina Bokningar</a>
-                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="showProfile">Min Profil</a>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <ul class="navbar-nav mr-auto">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Min sida
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="Index">Alla Aktiviteter</a>
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="MyActivites" asp-action="Index">Mina Aktiviteter</a>
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="MyBookies" asp-action="Index">Mina Bokningar</a>
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="myProfile" asp-action="showProfile">Min Profil</a>
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Group" asp-action="CreateGroupView">Skapa grupp</a>
+                                 
                                 <div class="dropdown-divider"></div>
                                 <a id="manage" class="dropdown-item text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Inställningar</a>
+                               
+                         
+                               
 
+                               
                             </div>
-                      
-
-                    </li>
-                </ul>
-                 
-
-
-                 
-            </div>
-             }
-                        else
-                        {
-                            <div class="dropdown-menu disabled" aria-labelledby="navbarDropdown">
-                                </div>
-                        }
-                        <partial name="_LoginPartial" />
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="dropdown-menu disabled" aria-labelledby="navbarDropdown">
+                </div>
+            }
+            @*<label class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span>
+            </label>*@
+            <partial name="_LoginPartial" />
         </nav>
     </header>
     @*//////////////////////*@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <div class="jumbotron bg-cover text-white" style=" height: 300px; background-attachment: scroll; position: relative; background-size: cover; background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url(https://www.diabetes.co.uk/wp-content/uploads/2019/01/iStock-949190756.jpg) ">
-  <div class="container">
-        <h1 class="display-4">Vad ska vi hitt på? Hitt på nå!</h1>
-        <p class="lead">Din väg till aktiviteter i Göteborg <br /></p>
+        <div class="container">
+            <h1 class="display-4">Vad ska vi hitt på? Hitt på nå!</h1>
+            <p class="lead">Din väg till aktiviteter i Göteborg <br /></p>
+        </div>
     </div>
-</div>
 
 
 
@@ -124,13 +94,15 @@
     </div>
     <br />
     <br />
-@*
-    <footer class="border-top footer text-muted">
+    @*
+        <footer class="border-top footer text-muted">
         <div class="container ">
-            &copy; 2022 - PlannerApplication - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2022 - PlannerApplication - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>*@
+        </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @*<script src="~/js/GoogleAdress.js"></script>*@
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

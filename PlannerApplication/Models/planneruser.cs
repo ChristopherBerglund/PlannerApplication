@@ -29,5 +29,9 @@ namespace PlannerApplication.Models
         public int? tagThreeID { get; set; } = 3;
         //public activity? TagThree { get; set; }
         public string standardPicture { get; set; } = "/img/userIcon.png";
+        public string Latitude { get; set; }
+        public string Longtitude { get; set; }
+
+
     }
 }

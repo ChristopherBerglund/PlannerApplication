@@ -1,0 +1,88 @@
+﻿@model PlannerApplication.Models.planneruser
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card text">
+            <div class="justify-content-center align-center">
+                <img class="mx-auto d-block mt-4" src="@Model.standardPicture" alt="@Model.firstName" style="width:25%; height:25%; border-radius: 50%;">
+                <h1 class="text-center">@Model.firstName @Model.lastName</h1>
+                <hr />
+                <div class="ml-3">
+                    <h5>Det här är @Model.firstName:</h5>
+                    <p>@Model.aboutMe </p>
+
+                    <h5>Favoriter:</h5>
+                    <ul>
+                        <li>@Model.tagOneID</li>
+                        <li>@Model.tagTwoID</li>
+                        <li>@Model.tagThreeID</li>
+                    </ul>
+                    <p><strong>Ålder:</strong> @Model.Age</p>
+                    <p><strong>Mail:</strong> @Model.Email</p>
+                    <p><strong>Telefon:</strong> @Model.Phone</p>
+                </div>
+            </div>
+        </div>
+    </div>
+        <a class="dropdown-item text-dark" asp-area="" asp-controller="myProfile" asp-action="Create">Ladda upp bild</a>
+
+</div>
+
+
+
+
+<div id="content">
+  
+        <form method="POST" 
+              action="" 
+              enctype="multipart/form-data">
+            <input type="file" 
+                   name="uploadfile" 
+                   value="" />
+  
+            <div>
+                <button type="submit"
+                        name="upload">
+                  UPLOAD
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+    <?php
+error_reporting(0);
+?>
+<?php
+  $msg = "";
+  
+  // If upload button is clicked ...
+  if (isset($_POST['upload'])) {
+  
+    $filename = $_FILES["uploadfile"]["name"];
+    $tempname = $_FILES["uploadfile"]["tmp_name"];    
+        $folder = "image/".$filename;
+          
+    $db = mysqli_connect("localhost", "root", "", "planner");
+  
+        // Get all the submitted data from the form
+        $sql = "INSERT INTO profilepicture (filename) VALUES ('$filename')";
+  
+        // Execute query
+        mysqli_query($db, $sql);
+          
+        // Now let's move the uploaded image into the folder: image
+        if (move_uploaded_file($tempname, $folder))  {
+            $msg = "Image uploaded successfully";
+        }else{
+            $msg = "Failed to upload image";
+      }
+  }
+  $result = mysqli_query($db, "SELECT * FROM image");
+?>

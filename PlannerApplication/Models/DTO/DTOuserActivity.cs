@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace PlannerApplication.Models.DTO
 {
-    public class userActivity
+    public class DTOuserActivity
     {
-        public userActivity(planneruser pla, List<string> act)
+        public DTOuserActivity(planneruser pla, List<string> act)
         {
             this.firstName = pla.firstName;
             this.lastName = pla.lastName;
-            this.interest1 = act[0];
-            this.interest2 = act[1];
-            this.interest3 = act[2];
             this.picUrl = pla.picture.Url;
             this.Age = pla.Age;
             this.Phone = pla.Phone;
             this.Mail = pla.Email;
             this.aboutMe = pla.aboutMe;
+            //this.interest1 = pla.tagOneID,
+            //this.interest2 = pla.tagTwoID,
+            //this.interest3 = pla.tagThreeID,
         }
 
         public string firstName { get; set; }
@@ -32,6 +32,7 @@ namespace PlannerApplication.Models.DTO
         public string? Phone { get; set; }
         public string? Mail { get; set; }
         public string? aboutMe { get; set; }
+        public List<activity> Sports { get; set; }
 
     }
 

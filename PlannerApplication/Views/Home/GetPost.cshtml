@@ -1,55 +1,107 @@
 ﻿@model IEnumerable<PlannerApplication.Models.activity>
+<style>
+		#map{
+		height: 300px;
+		width: 100%;
+	}
+    </style>
 
 <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div class="card">
+ 
+                    <strong>Var: </strong>
+                <form id="location-form">
+                    <input type="text" id="location-input" class="form-control d-inline-block" required>
+                    <br>
+                    <button type="Submit" class="btn btn-primary btn-block mt-1">Hitta adressen!</button>
+                </form>
+                <br />
+                @*<div class="card" id="formatted-address"></div>*@
+                <!-- <div class="card-block" id="address-components"></div> -->
+                <div class="card-block" id="geometry"></div>
+            
+            <div class="" id="map"></div>
+        
+
+
+        
+
+
+
         @using (Html.BeginForm("PostNew", "Home"))
         {
-            <div class="card">
+           
 
                 <div class="card-body">
-                    <h5 class="card-title form-group">
-                        <strong>Aktivitet:</strong>
+                    <h6 class="card-title form-group">
+                        <strong>Aktivitet:</strong><br>
                         <select id="activites" name="_activity">
                             @foreach (var activities in Model)
                             {
                                 <option value="@activities.Name">@activities.Name</option>
                             }
                         </select>
-                    </h5>
+                    </h6>
                     <p class="card-text">
-                        <strong>Rubrik: </strong>
-                        <input type="text" class="form-control" id="na" name="_headline" placeholder="Information om evenemanget..."  maxlength="50" required>
+                        <strong>Info: </strong>
+                        <input type="text" class="form-control" id="na" name="_headline" placeholder="Information om evenemanget..." maxlength="300" required>
                     </p>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Var:</strong>
-                        <input type="text" class="form-control" id="na" name="_where" required>
-                    </li>
+               
+                   
                     <li class="list-group-item">
                         <strong>När:</strong>
                         <input type="datetime-local" class="form-control" id="na" name="_when" required>
                     </li>
-                  @*  <li class="list-group-item">
-                        <strong>Min deltagare:</strong>
-                        <input type="number" class="form-control" id="na" name="_min">
+                    <li class="list-group-item">
+                        <strong>Min deltagare:</strong> <i> (Meddela mig när minimum deltagare har nåtts?) &emsp;</i> <input type="checkbox" id="na" name="_notification" value="true">
+                        <input type="number" class="form-control" id="na" name="_min" value="0">
+                            
+                       
                     </li>
-                       <li class="list-group-item">
+                    <li class="list-group-item">
                         <strong>Max deltagare:</strong>
-                        <input type="number" class="form-control" id="na" name="_max">
+                        <input type="number" class="form-control" id="na" name="_max" value="99">
                     </li>
-                       <li class="list-group-item">
+                    <li class="list-group-item">
                         <strong>Åldersgräns:</strong>
                         <input type="number" class="form-control" id="na" name="_ageLimit">
-                    </li>*@
+                    </li>
+                         <li class="list-group-item">
+                            <input type="checkbox" id="na" name="_kids" value="true">
+                        <strong>Barn-aktivitet?</strong>
+                    </li>
+                    <li class="list-group-item">
+                            <input type="checkbox" id="na" name="_Involved" value="true">
+
+                        <strong>Kommer du själv att delta?</strong>
+                    </li>
+                    <input type="hidden" id="latitude" value="" name="_lat" />
+                    <input type="hidden" id="longtitude" value="" name="_lng" /> 
+                    <input type="hidden" id="address" value="" name="_address" /> 
                 </ul>
-            </div>
             <div class="form-group text-center m-5">
-                <button type="submit" class="btn btn-primary">Skapa</button>
+                <button type="submit" id="name" class="btn btn-primary">Skapa</button>
             </div>
         }
+        <ul>
+         
     </div>
 </div>
+</div>
+<script src="/js/GoogleAdress.js"></script>
+
+        
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ZXdv31nRynoPkkDjq8iLP6DzWSn-0q8&callback=initMap"
+async
+></script>
+
+
+
+
+
 
 
 
