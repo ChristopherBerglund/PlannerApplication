@@ -40,7 +40,7 @@ namespace PlannerApplication.Controllers
             ViewBag.Age = me.Age;
 
             var activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.When).ToList();
-           
+            ViewBag.Sum = Helper.GetTheDistance(activities, me);
             //int sum = Helper.GetTheDistance(activities, me);
 
             if (searchString != null && searchString != "Populärt" && searchString != "Senaste" && searchString != "Barn" && searchString != "Närmast mig")
@@ -67,7 +67,7 @@ namespace PlannerApplication.Controllers
 
             Helper.IsItAnOldEvent(activities, _context);
             Helper.IsItLessThan2HoursToEventNotfication(activities, _context);
-            ViewBag.Sum = Helper.GetTheDistance(activities, me);
+            //ViewBag.Sum = Helper.GetTheDistance(activities, me);
 
 
             return View(activities);

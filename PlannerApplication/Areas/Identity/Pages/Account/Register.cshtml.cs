@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -12,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +21,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PlannerApplication.Data;
+using PlannerApplication.HelpClasses;
 using PlannerApplication.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using static System.Net.WebRequestMethods;
 
 namespace PlannerApplication.Areas.Identity.Pages.Account
 {
@@ -32,6 +38,7 @@ namespace PlannerApplication.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly PlannerContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -39,7 +46,8 @@ namespace PlannerApplication.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            PlannerContext context)
+            PlannerContext context,
+            IWebHostEnvironment hostEnvironment)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -48,6 +56,7 @@ namespace PlannerApplication.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         /// <summary>
@@ -119,7 +128,11 @@ namespace PlannerApplication.Areas.Identity.Pages.Account
             public int Age{ get; set; }
             public string Longtitude { get; set; }
             public string Latitude { get; set; }
-
+            public string Title { get; set; }
+            public string ImageName { get; set; }
+            [NotMapped]
+            [Display(Name = "Profilbild")]
+            public IFormFile ImageFile { get; set; }
 
         }
 
@@ -150,24 +163,59 @@ namespace PlannerApplication.Areas.Identity.Pages.Account
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    planneruser us = new planneruser()
+
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(Input.ImageFile.FileName);
+                    string extension = Path.GetExtension(Input.ImageFile.FileName);
+                    string FileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; //
+
+                    
+
+                    string path = Path.Combine(wwwRootPath + "/ProfileImages/", FileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
                     {
-                        userID = userId,
-                        Email = user.Email,
-                        firstName = Input.firstName,
-                        lastName = Input.lastName,
-                        Phone = Input.Phone,
-                        Age = Input.Age,
-                        Longtitude = Input.Longtitude,
-                        Latitude = Input.Latitude
-                    };
+                        await Input.ImageFile.CopyToAsync(fileStream);
+                    }
+
+                    using (var image = Image.Load(Input.ImageFile.OpenReadStream()))
+                    {
+                        //string newSize = Cropper.ResizeImage(image, 200, 200);
+                        //string[] aSize = newSize.Split(',');
+                        image.Mutate(h => h.Resize(200, 200));
+                        image.Save(path);
+                        TempData["message"] = "Bilden har laddats upp!";
+                    }
 
 
+                        planneruser us = new planneruser()
+                        {
+                            userID = userId,
+                            Email = user.Email,
+                            firstName = Input.firstName,
+                            lastName = Input.lastName,
+                            Phone = Input.Phone,
+                            Age = Input.Age,
+                            Longtitude = Input.Longtitude,
+                            Latitude = Input.Latitude,
+                            standardPicture = $"/ProfileImages/{FileName}"
+
+                        };
 
                     await _context.planneruser.AddAsync(us);
                     await _context.SaveChangesAsync();
 
+                    //imagemodel img = new imagemodel()
+                    //{
+                    //    ImageName = FileName,
+                    //    Title = Input.firstName + Input.lastName + DateTime.Now.ToString("yymmssfff")
+                    //};
+                    //await _context.imagemodel.AddAsync(img);
+                    //await _context.SaveChangesAsync();
 
+
+
+                   
+                  
 
 
 

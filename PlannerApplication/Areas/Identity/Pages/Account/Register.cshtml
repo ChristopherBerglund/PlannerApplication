@@ -8,7 +8,7 @@
 
 <div class="row justify-content-center">
     <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
               <h1 class="align-content-center">Registera dig</h1>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -47,10 +47,18 @@
                 <label asp-for="Input.Age"></label>
                 <span asp-validation-for="Input.Age" class="text-danger"></span>
             </div>
+                <div class="form-floating"> @*lastName*@
+                    <br />
+                    <br />
+                <input asp-for="Input.ImageFile" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.ImageFile" accept="image/*"></label>
+                <span asp-validation-for="Input.ImageFile" class="text-danger"></span>
+            </div>
+             
             <input asp-for="Input.Latitude" type="hidden" id=latitude class="form-control" autocomplete="new-password" aria-required="true" />
             <input asp-for="Input.Longtitude" type="hidden" id=longtitude class="form-control" autocomplete="new-password" aria-required="true" />
 
-    
+            <hr />
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>

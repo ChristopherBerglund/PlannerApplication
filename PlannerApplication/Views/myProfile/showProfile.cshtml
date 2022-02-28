@@ -33,56 +33,14 @@
 
 
 
-<div id="content">
-  
-        <form method="POST" 
-              action="" 
-              enctype="multipart/form-data">
-            <input type="file" 
-                   name="uploadfile" 
-                   value="" />
-  
-            <div>
-                <button type="submit"
-                        name="upload">
-                  UPLOAD
-                </button>
-            </div>
-        </form>
-    </div>
-
-
-
-
-
-
-    <?php
-error_reporting(0);
-?>
-<?php
-  $msg = "";
-  
-  // If upload button is clicked ...
-  if (isset($_POST['upload'])) {
-  
-    $filename = $_FILES["uploadfile"]["name"];
-    $tempname = $_FILES["uploadfile"]["tmp_name"];    
-        $folder = "image/".$filename;
-          
-    $db = mysqli_connect("localhost", "root", "", "planner");
-  
-        // Get all the submitted data from the form
-        $sql = "INSERT INTO profilepicture (filename) VALUES ('$filename')";
-  
-        // Execute query
-        mysqli_query($db, $sql);
-          
-        // Now let's move the uploaded image into the folder: image
-        if (move_uploaded_file($tempname, $folder))  {
-            $msg = "Image uploaded successfully";
-        }else{
-            $msg = "Failed to upload image";
-      }
-  }
-  $result = mysqli_query($db, "SELECT * FROM image");
-?>
+<div>
+    @using (Html.BeginForm("Upload","Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <fieldset>
+        <input type="hidden" name = "ActionName" value="Index"/>
+        <input type="file" name="file3" />
+        @*You also can add more file here*@
+        </fieldset>
+        <input type="submit" value="UpLoad" />
+    }
+</div>

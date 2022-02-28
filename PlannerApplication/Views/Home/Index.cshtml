@@ -1,5 +1,12 @@
 ﻿@model IEnumerable<PlannerApplication.Models.newactivity>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+		#map{
+		height: 300px;
+		width: 100%;
+	}
+    </style>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -84,9 +91,28 @@
                         <div class="collapse multi-collapse" id="multiCollapseExample @b">
                             <div class="card card-body">
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong>Distans:</strong> @activity.Distance km</li>
+                                    @if(@activity.Distance <= 1)
+                                    {
+                                        <li class="list-group-item"><strong>Distans:</strong> mindre än 1 km..</li>
+                                    }
+                                    else
+                                    {
+                                        <li class="list-group-item"><strong>Distans:</strong> @activity.Distance km</li>
+                                    }
                                     <li class="list-group-item"><strong>Text:</strong> @activity.Text</li>
-                                    <li class="list-group-item"><strong>Var:</strong> @activity.Where</li>
+                                    <li class="list-group-item"><strong>Var:</strong> <a class="" type="submit" class="btn btn-info btn-lg" id="myBtn">@activity.Where</a></li>
+                                      @*<button type="button" class="btn btn-info btn-lg" id="myBtn">Open Modal</button>*@
+                                        <div class="modal fade" id="myModal" role="dialog">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-body">
+                                                    <div class="" id="map"></div>
+                                            </div>
+                                            <div class="modal-footer">
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </div> 
                                     <li class="list-group-item"><strong>När:</strong> @activity.When</li>
                                     <li class="list-group-item"><strong>Ansvarig: </strong> <a class="" type="submit" asp-action="" asp-route-id="" data-toggle="modal" data-target="#ModalProfile @b">@activity.User.firstName</a></li>
                                     <div class="row">
@@ -133,8 +159,7 @@
 
 
 
-                        <div class="modal fade" id="Modal @b">
-                            <!-- Modal for profile-->
+                        <div class="modal fade" id="Modal @b">  <!-- Modal for profile-->
                         <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -163,18 +188,18 @@
                             <!-- Modal for profile-->
                         <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header">
+                                   @* <div class="modal-header">
                                         <h4 class="modal-title">@activity.User.firstName</h4>
-                                    </div>
+                                    </div>*@
                                     <div class="modal-body">
                                         <div class="row justify-content-center">
                                             <div class="card text">
                                                 <div class="justify-content-center align-center">
-                                                    <img class="mx-auto d-block mt-4" src="@activity.User.standardPicture" alt="@activity.User.firstName" style="width:30%; height:25%; border-radius: 50%;">
+                                                    <img class="mx-auto d-block mt-4" src="@activity.User.standardPicture" alt="@activity.User.firstName" style="width:30%; height:25%; border-radius: 50%;  border: solid">
                                                     <h1 class="text-center">@activity.User.firstName @activity.User.lastName</h1>
                                                     <hr />
                                                     <div class="ml-3">
-                                                        <h5>Det här är @activity.User.firstName:</h5>
+                                                        <h5>Om @activity.User.firstName:</h5>
                                                         <p>@activity.User.aboutMe </p>
 
                                                         <h5>Favoriter:</h5>
@@ -339,10 +364,51 @@
                 </div>
             </div>
         </div>
+        <form>
+         <input hidden value="@activity.Latitude" type="number" name="a" id="a"><br>
+         <input hidden value="@activity.Longitude" type="number" name="b" id="b"><br>
+        </form>
     }
 </div>
 
 
+<script>
+    let a = document.getElementById('a').value;
+    let b = document.getElementById('b').value;
+    var latDouble  = parseFloat(a);
+    var longDouble = parseFloat(b);
+
+$(document).ready(function(){
+  $("#myBtn").click(function(){
+    $("#myModal").modal("show");
+  });
+  $("#myModal").on('shown.bs.modal', function(){
+    initMap(latDouble,longDouble)
+  });
+});
+
+
+
+function initMap(a, b) {
+    // Map options
+    console.log("InitMap");
+    console.log(a);
+    console.log(57.7044493);
+
+
+
+    var options = {
+        zoom: 13,
+        center: { lat: a, lng: b }
+    }
+    // New map
+    var map = new google.maps.Map(document.getElementById('map'), options);
+    // Add marker
+    var marker = new google.maps.Marker({
+        position: { lat: a, lng: b },
+        map: map
+    });
+}
 
 
 
@@ -351,6 +417,10 @@
 
 
 
+</script>
 
 
-
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ZXdv31nRynoPkkDjq8iLP6DzWSn-0q8&callback=initMap"
+async
+></script>

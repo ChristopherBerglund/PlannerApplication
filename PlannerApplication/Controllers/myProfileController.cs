@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PlannerApplication.Data;
+using PlannerApplication.Models;
 using PlannerApplication.Models.DTO;
 
 namespace PlannerApplication.Controllers
@@ -44,6 +45,7 @@ namespace PlannerApplication.Controllers
             return View(a);
             
         }
+
 
 
 
