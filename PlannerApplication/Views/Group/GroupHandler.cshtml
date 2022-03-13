@@ -1,0 +1,63 @@
+﻿@model PlannerApplication.Models.group
+
+@{
+    ViewData["Title"] = "GroupHandler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var myID = ViewBag.myId;
+}
+
+<h1>@Model.groupTitle</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Namn
+            </th>
+            <th>
+                Efternamn
+            </th>
+            <th>
+                Ålder
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.members) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.firstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.lastName)
+            </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.User.Age)
+            </td>
+       
+                <td>
+                @if(item.isMember == true && item.userID != @myID)
+                {
+                    <a type="button" class="btn btn-danger" asp-controller="Group" asp-action="DenieMember" asp-route-id="@item.User.userID">Ta bort</a>
+                }
+                else if(item.isMember == false && item.userID != @myID)
+                {
+                    <a type="button" class="btn btn-success" asp-controller="Group" asp-action="AcceptMember" asp-route-id="@item.User.userID">Acceptera</a>
+                    <a type="button" class="btn btn-danger" asp-controller="Group" asp-action="DenieMember" asp-route-id="@item.User.userID">Neka</a>
+
+                }
+                else
+                {
+                    <p><strong>ADMIN</strong></p>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>  
+
+
+
+

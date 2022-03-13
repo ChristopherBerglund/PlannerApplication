@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PlannerApplication.Models
 {
-    public class newactivity
+    public class newactivity 
     {
         public int newActivityID { get; set; }
         public int activityID { get; set; }
@@ -27,8 +28,9 @@ namespace PlannerApplication.Models
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public double Distance { get; set; }
-        //public bool Public { get; set; } = true;
+        //[ForeignKey("groupID")]
         //public int groupID { get; set; }
         //public group group { get; set; }
+        //public bool Public { get; set; } = true;
     }
 }

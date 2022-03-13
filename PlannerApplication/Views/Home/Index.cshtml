@@ -16,8 +16,21 @@
     int c = Model.Count();
     var _userID = ViewBag.user;
     var _userAge = ViewBag.Age;
+    var Notification = ViewBag.Notification;
 }
 
+@if(Notification == true)
+{
+    <div class="row">
+        <div class="col text-center">
+            <div class="alert alert-primary mw-10" role="alert">
+                Någon vill gå med i din grupp!
+                <a type="button" class="btn btn-success" asp-controller="Group" asp-action="GroupHandler" asp-route-id="">Ta reda på vem!</a>
+            </div>
+        </div>
+    </div>
+    <hr />
+}
 
 <div class="Search container ">
     <!-- Search area -->
@@ -100,8 +113,9 @@
                                         <li class="list-group-item"><strong>Distans:</strong> @activity.Distance km</li>
                                     }
                                     <li class="list-group-item"><strong>Text:</strong> @activity.Text</li>
-                                    <li class="list-group-item"><strong>Var:</strong> <a class="" type="submit" class="btn btn-info btn-lg" id="myBtn">@activity.Where</a></li>
+                                    <li class="list-group-item"><strong>Var:</strong> <a class="" type="submit" class="btn btn-info btn-lg" id="myBtn"> @activity.Where</a></li>
                                       @*<button type="button" class="btn btn-info btn-lg" id="myBtn">Open Modal</button>*@
+                                      <!-- MODAL for map-->
                                         <div class="modal fade" id="myModal" role="dialog">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -393,7 +407,8 @@ function initMap(a, b) {
     // Map options
     console.log("InitMap");
     console.log(a);
-    console.log(57.7044493);
+    console.log(b);
+
 
 
 

@@ -1,0 +1,150 @@
+﻿@model IEnumerable<PlannerApplication.Models.group>
+
+@{
+    ViewData["Title"] = "IndexAsync";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var _userID = ViewBag.User;
+    bool isMember = true;
+  
+}
+
+
+
+<div class="Search container ">
+    <!-- Search area -->
+    <div class="row">
+        <div class="col text-center">
+            <div class="btn-group">
+                <form>
+                    @using (Html.BeginForm("Index", "Group"))
+                    {
+                        <input class="form-control mr-sm-2 text-center" type="search" placeholder="Sök efter grupp..." name="searchString" aria-label="Search">
+                    }
+                </form>
+                @*<button type="button" class="btn btn-primary">Sortera</button>*@
+               @* <button type="button" class="btn btn-primare dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>*@
+             @*   <div class="dropdown-menu">
+                    <form>
+                        @using (Html.BeginForm("Index", "Home"))
+                        {
+                            <input class="dropdown-item" type="submit" name="searchString" value="Senaste">
+                            <input class="dropdown-item" type="submit" name="searchString" value="Populärt">
+                            <input class="dropdown-item" type="submit" name="searchString" value="Barn">
+                            <input class="dropdown-item" type="submit" name="searchString" value="Närmast mig">
+                        }
+                    </form>
+            </div>*@
+     
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Skapa grupp
+</button>
+
+        </div>
+    </div>
+</div><!-- //Search area -->
+
+<br />
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Skapa grupp</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+           @using (Html.BeginForm("Create", "Group"))
+             {
+                 <p class="card-text">
+                        <strong>Info: </strong>
+                        <input type="text" class="form-control" id="na" name="_title" placeholder="Namn på grupp..." maxlength="300" required>
+                    </p>
+              <div class="form-group text-center m-5">
+                <button type="submit" id="name" class="btn btn-primary">Skapa</button>
+            </div>
+             }
+          
+          @*<button type="button" class="btn btn-primary"><a asp-action="Create">Skapa</a></button>*@
+      </div>
+      @*<div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+        <button type="button" class="btn btn-primary"><a asp-action="Create">Skapa</a></button>
+      </div>*@
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Namn
+            </th>
+            <th>
+                Ägare
+            </th>
+             <th>
+                Medlemmar
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.groupTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.user.firstName)
+            </td>
+                 <td>
+                @Html.DisplayFor(modelItem => item.Qty)
+            </td>
+            <td>
+
+                <!--Om du finns som medlem men är false = Avaktande DISABLED
+                    Om du finns som medlem men är true = GÅ UR
+                    Om du Inte finns som medelm = GÅ MED
+                -->
+                    @foreach(var member in item.members)
+                    {
+                        if(member.userID == @_userID)
+                        {
+                            isMember = false;
+                      
+                            if(member.isMember == true)
+                            {
+                                <a type="button" class="btn btn-danger" asp-controller="Group" asp-action="UnJoinGroup" asp-route-id="@item.groupID">Gå ur</a>
+                            }
+                            else if(member.isMember == false)
+                            {
+                                <a type="button" class="btn btn-warning disabled" aria-disabled="true">Väntar..</a>
+                            }
+
+                        }
+                    }
+                    @if(isMember == true)
+                    {
+                         <a type="button" class="btn btn-success" asp-controller="Group" asp-action="JoinGroup" asp-route-id="@item.groupID">Gå med</a>
+                    }
+                    
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

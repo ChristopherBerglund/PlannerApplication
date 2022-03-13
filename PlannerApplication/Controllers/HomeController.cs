@@ -38,6 +38,7 @@ namespace PlannerApplication.Controllers
             ViewBag.User = user.Id;
             var me = _context.planneruser.Where(x => x.userID == user.Id).FirstOrDefault();
             ViewBag.Age = me.Age;
+            ViewBag.Notification = GroupHelper.IsThereNotificaton(_context, user.Id);
 
             var activities = _context.newactivity.Include("Activity").Include("User").Include(x => x.participants).ThenInclude(x => x.User).OrderByDescending(x => x.When).ToList();
             ViewBag.Sum = Helper.GetTheDistance(activities, me);

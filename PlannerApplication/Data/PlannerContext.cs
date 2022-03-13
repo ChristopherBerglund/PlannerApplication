@@ -19,11 +19,8 @@ namespace PlannerApplication.Data
         public DbSet<planneruser> planneruser { get; set; }
         public DbSet<participant> participant { get; set; }
         public DbSet<picture> picture { get; set; }
-        //public DbSet<imagemodel> imagemodel { get; set; }
-
-
-
-        
+        public DbSet<group> group { get; set; }
+        public DbSet<member> member { get; set; }
     }
 }
 

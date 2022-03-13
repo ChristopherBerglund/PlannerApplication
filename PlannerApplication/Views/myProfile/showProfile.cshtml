@@ -1,46 +1,111 @@
 ﻿@model PlannerApplication.Models.planneruser
 
+@{
+    ViewData["Title"] = "showProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<form asp-action="Edit">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="userID" />
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card text">
+                            <div class="justify-content-center align-center">
+                                <img class="mx-auto d-block mt-4" src="@Model.standardPicture" alt="@Model.firstName" style="width:25%; height:25%; border-radius: 50%;">
+                                <h1 class="text-center">@Model.firstName @Model.lastName</h1>
+                                <hr />
+                                <div class="ml-3">
+                                         <div class="form-group">
+                                            @*<label asp-for="aboutMe" class="control-label"></label>*@
+                                            <h5>Det här är @Model.firstName:</h5>
+                                            <input asp-for="aboutMe" class="form-control" value="@Model.aboutMe" required />
+                                            <span asp-validation-for="aboutMe" class="text-danger"></span>
+                                        </div>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card text">
-            <div class="justify-content-center align-center">
-                <img class="mx-auto d-block mt-4" src="@Model.standardPicture" alt="@Model.firstName" style="width:25%; height:25%; border-radius: 50%;">
-                <h1 class="text-center">@Model.firstName @Model.lastName</h1>
-                <hr />
-                <div class="ml-3">
-                    <h5>Det här är @Model.firstName:</h5>
-                    <p>@Model.aboutMe </p>
+                                    <h5>Favoriter:</h5>
+                             
+                                
+                                            <div class="form-group">
+                                                @*<label asp-for="tagOneID" class="control-label"></label>*@
+                                                 <strong>Intresse 1:</strong>
+                                                <input asp-for="tagOneID" class="form-control" value="@Model.tagOneID" required/>
+                                                <span asp-validation-for="tagOneID" class="text-danger"></span>
+                                            </div>
+                                   
+                              
+                                             <div class="form-group">
+                                                @*<label asp-for="tagOneID" class="control-label"></label>*@
+                                                 <strong>Intresse 2:</strong>
+                                                <input asp-for="tagTwoID" class="form-control" value="@Model.tagTwoID" required />
+                                                <span asp-validation-for="tagTwoID" class="text-danger"></span>
+                                            </div>
+                   
+                                             <div class="form-group">
+                                                @*<label asp-for="tagOneID" class="control-label"></label>*@
+                                                 <strong>Intresse 3:</strong>
+                                                <input asp-for="tagThreeID" class="form-control" value="@Model.tagThreeID" required />
+                                                <span asp-validation-for="tagThreeID" class="text-danger"></span>
+                                            </div>
+                              
+                                    <div class="form-group">
+                                        @*<label asp-for="Age" class="control-label"></label>*@
+                                        <strong>Ålder:</strong>
+                                        <input asp-for="Age" class="form-control" value="@Model.Age" required/>
+                                        <span asp-validation-for="Age"  class="text-danger"></span>
+                                    </div>
+                                 
+                                     <div class="form-group">
+                                        @*<label asp-for="Phone" class="control-label"></label>*@
+                                        <strong>Telefon:</strong>
+                                        <input asp-for="Phone" class="form-control" value="@Model.Phone" required />
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
 
-                    <h5>Favoriter:</h5>
-                    <ul>
-                        <li>@Model.tagOneID</li>
-                        <li>@Model.tagTwoID</li>
-                        <li>@Model.tagThreeID</li>
-                    </ul>
-                    <p><strong>Ålder:</strong> @Model.Age</p>
-                    <p><strong>Mail:</strong> @Model.Email</p>
-                    <p><strong>Telefon:</strong> @Model.Phone</p>
+
+                                       <div class="form-group">
+                                        @*<label asp-for="Email" class="control-label"></label>*@
+                                            <input asp-for="Email" class="form-control" value="@Model.Email" hidden />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>  
+                                       <div class="form-group">
+                                            <input asp-for="Latitude" class="form-control" value="@Model.Latitude" hidden />
+                                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <input asp-for="Longtitude" class="form-control" value="@Model.Longtitude" hidden />
+                                            <span asp-validation-for="Longtitude" class="text-danger"></span>
+                                        </div>
+                                          <div class="form-group">
+                                            <input asp-for="firstName" class="form-control" value="@Model.firstName" hidden />
+                                            <span asp-validation-for="firstName" class="text-danger"></span>
+                                        </div>
+                                         <div class="form-group">
+                                            <input asp-for="lastName" class="form-control" value="@Model.lastName" hidden />
+                                            <span asp-validation-for="lastName" class="text-danger"></span>
+                                        </div>
+                                         <div class="form-group">
+                                            <input asp-for="standardPicture" class="form-control" value="@Model.standardPicture" hidden />
+                                            <span asp-validation-for="standardPicture" class="text-danger"></span>
+                                        </div>
+                           
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-        <a class="dropdown-item text-dark" asp-area="" asp-controller="myProfile" asp-action="Create">Ladda upp bild</a>
-
-</div>
-
-
-
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+</form>
 
 <div>
-    @using (Html.BeginForm("Upload","Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <fieldset>
-        <input type="hidden" name = "ActionName" value="Index"/>
-        <input type="file" name="file3" />
-        @*You also can add more file here*@
-        </fieldset>
-        <input type="submit" value="UpLoad" />
-    }
-</div>
+

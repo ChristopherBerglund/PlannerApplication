@@ -21,11 +21,11 @@ namespace PlannerApplication.Models
         public int pictureID { get; set; } = 6;
         public picture picture { get; set; } 
         public string aboutMe { get; set; } = "Information om mig kommer inom kort...";
-        public int? tagOneID { get; set; } = 1;
+        public string? tagOneID { get; set; } = string.Empty;
         //public activity? TagOne { get; set; }
-        public int? tagTwoID { get; set; } = 2;
+        public string? tagTwoID { get; set; } = string.Empty;
         //public activity? TagTwo { get; set; }
-        public int? tagThreeID { get; set; } = 3;
+        public string? tagThreeID { get; set; } = string.Empty;
         //public activity? TagThree { get; set; }
         public string standardPicture { get; set; } = "/img/userIcon.png´";
         public string Latitude { get; set; }
