@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{446E20
 	ProjectSection(SolutionItems) = preProject
 		Planner Application SQL Script.txt = Planner Application SQL Script.txt
 		Planner SQL script.txt = Planner SQL script.txt
-		TextFile1.txt = TextFile1.txt
+		README.txt = README.txt
 	EndProjectSection
 EndProject
 Global
